@@ -16,8 +16,8 @@ defmodule PaperTrail do
   @doc """
   Inserts a record to the database with a related version insertion in one transaction
   """
-  def insert(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil]) do
-    repo = RepoClient.repo()
+  def insert(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+    repo = options[:repo] || RepoClient.repo()
     transaction_order = case RepoClient.strict_mode() do
       true ->
         Multi.new
@@ -78,8 +78,8 @@ defmodule PaperTrail do
   @doc """
   Same as insert/2 but returns only the model struct or raises if the changeset is invalid.
   """
-  def insert!(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil]) do
-    repo = RepoClient.repo()
+  def insert!(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+    repo = options[:repo] || RepoClient.repo()
     repo.transaction(fn ->
       case RepoClient.strict_mode() do
         true ->
@@ -116,8 +116,8 @@ defmodule PaperTrail do
   @doc """
   Updates a record from the database with a related version insertion in one transaction
   """
-  def update(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil]) do
-    repo = PaperTrail.RepoClient.repo()
+  def update(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+    repo = options[:repo] || PaperTrail.RepoClient.repo()
     client = PaperTrail.RepoClient
     transaction_order = case client.strict_mode() do
       true ->
@@ -170,8 +170,8 @@ defmodule PaperTrail do
   @doc """
   Same as update/2 but returns only the model struct or raises if the changeset is invalid.
   """
-  def update!(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil]) do
-    repo = PaperTrail.RepoClient.repo()
+  def update!(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+    repo = options[:repo] || PaperTrail.RepoClient.repo()
     client = PaperTrail.RepoClient
     repo.transaction(fn ->
       case client.strict_mode() do
@@ -201,8 +201,8 @@ defmodule PaperTrail do
   @doc """
   Deletes a record from the database with a related version insertion in one transaction
   """
-  def delete(struct, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil]) do
-    repo = PaperTrail.RepoClient.repo()
+  def delete(struct, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+    repo = options[:repo] || PaperTrail.RepoClient.repo()
     transaction = Multi.new
       |> Multi.delete(:model, struct, options)
       |> Multi.run(:version, fn %{} ->
@@ -220,8 +220,8 @@ defmodule PaperTrail do
   @doc """
   Same as delete/2 but returns only the model struct or raises if the changeset is invalid.
   """
-  def delete!(struct, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil]) do
-    repo = PaperTrail.RepoClient.repo()
+  def delete!(struct, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+    repo = options[:repo] || PaperTrail.RepoClient.repo()
     repo.transaction(fn ->
       model = repo.delete!(struct, options)
       version_struct = make_version_struct(%{event: "delete"}, struct, options)
