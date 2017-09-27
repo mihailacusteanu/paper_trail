@@ -36,7 +36,7 @@ defmodule PaperTrail do
             })
           end
           initial_version = make_version_struct(%{event: "insert"}, changeset_data, options)
-          PaperTrail.RepoClient.insert(initial_version)
+          PaperTrail.RepoClient.repo().insert(initial_version)
         end)
         |> Multi.run(:model, fn %{initial_version: initial_version} ->
           updated_changeset = changeset |> change(%{
@@ -46,14 +46,14 @@ defmodule PaperTrail do
         end)
         |> Multi.run(:version, fn %{initial_version: initial_version, model: model} ->
           target_version = make_version_struct(%{event: "insert"}, model, options) |> serialize()
-          Version.changeset(initial_version, target_version) |> PaperTrail.RepoClient.update
+          Version.changeset(initial_version, target_version) |> PaperTrail.RepoClient.repo().update
         end)
       _ ->
         Multi.new
         |> Multi.insert(:model, changeset)
         |> Multi.run(:version, fn %{model: model} ->
           version = make_version_struct(%{event: "insert"}, model, options)
-          PaperTrail.RepoClient.insert(version)
+          PaperTrail.RepoClient.repo().insert(version)
         end)
     end
 
@@ -97,17 +97,17 @@ defmodule PaperTrail do
             })
           end
           initial_version = make_version_struct(%{event: "insert"}, changeset_data, options)
-            |> PaperTrail.RepoClient.insert!
+            |> PaperTrail.RepoClient.repo().insert!
           updated_changeset = changeset |> change(%{
             first_version_id: initial_version.id, current_version_id: initial_version.id
           })
           model = repo.insert!(updated_changeset)
           target_version = make_version_struct(%{event: "insert"}, model, options) |> serialize()
-          Version.changeset(initial_version, target_version) |> PaperTrail.RepoClient.update!
+          Version.changeset(initial_version, target_version) |> PaperTrail.RepoClient.repo().update!
           model
         _ ->
           model = repo.insert!(changeset)
-          make_version_struct(%{event: "insert"}, model, options) |> PaperTrail.RepoClient.insert!
+          make_version_struct(%{event: "insert"}, model, options) |> PaperTrail.RepoClient.repo().insert!
           model
       end
     end) |> elem(1)
@@ -128,7 +128,7 @@ defmodule PaperTrail do
           })
           target_changeset = changeset |> Map.merge(%{data: version_data})
           target_version = make_version_struct(%{event: "update"}, target_changeset, options)
-          PaperTrail.RepoClient.insert(target_version)
+          PaperTrail.RepoClient.repo().insert(target_version)
         end)
         |> Multi.run(:model, fn %{initial_version: initial_version} ->
           updated_changeset = changeset |> change(%{current_version_id: initial_version.id})
@@ -138,14 +138,14 @@ defmodule PaperTrail do
           new_item_changes = initial_version.item_changes |> Map.merge(%{
             current_version_id: initial_version.id
           })
-          initial_version |> change(%{item_changes: new_item_changes}) |> PaperTrail.RepoClient.update
+          initial_version |> change(%{item_changes: new_item_changes}) |> PaperTrail.RepoClient.repo().update
         end)
       _ ->
         Multi.new
         |> Multi.update(:model, changeset)
         |> Multi.run(:version, fn %{model: _model} ->
           version = make_version_struct(%{event: "update"}, changeset, options)
-          PaperTrail.RepoClient.insert(version)
+          PaperTrail.RepoClient.repo().insert(version)
         end)
     end
 
@@ -181,18 +181,18 @@ defmodule PaperTrail do
           })
           target_changeset = changeset |> Map.merge(%{data: version_data})
           target_version = make_version_struct(%{event: "update"}, target_changeset, options)
-          initial_version = PaperTrail.RepoClient.insert!(target_version)
+          initial_version = PaperTrail.RepoClient.repo().insert!(target_version)
           updated_changeset = changeset |> change(%{current_version_id: initial_version.id})
           model = repo.update!(updated_changeset)
           new_item_changes = initial_version.item_changes |> Map.merge(%{
             current_version_id: initial_version.id
           })
-          initial_version |> change(%{item_changes: new_item_changes}) |> PaperTrail.RepoClient.update!
+          initial_version |> change(%{item_changes: new_item_changes}) |> PaperTrail.RepoClient.repo().update!
           model
         _ ->
           model = repo.update!(changeset)
           version_struct = make_version_struct(%{event: "update"}, changeset, options)
-          PaperTrail.RepoClient.insert!(version_struct)
+          PaperTrail.RepoClient.repo().insert!(version_struct)
           model
       end
     end) |> elem(1)
@@ -207,7 +207,7 @@ defmodule PaperTrail do
       |> Multi.delete(:model, struct, options)
       |> Multi.run(:version, fn %{} ->
         version = make_version_struct(%{event: "delete"}, struct, options)
-        PaperTrail.RepoClient.insert(version, options)
+        PaperTrail.RepoClient.repo().insert(version, options)
       end)
       |> repo.transaction(options)
 
@@ -225,7 +225,7 @@ defmodule PaperTrail do
     repo.transaction(fn ->
       model = repo.delete!(struct, options)
       version_struct = make_version_struct(%{event: "delete"}, struct, options)
-      PaperTrail.RepoClient.insert!(version_struct, options)
+      PaperTrail.RepoClient.repo().insert!(version_struct, options)
       model
     end) |> elem(1)
   end
