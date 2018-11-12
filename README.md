@@ -1,4 +1,4 @@
-[![Build Status](https://circleci.com/gh/izelnakri/paper_trail.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/izelnakri/paper_trail) [![Hex Version](http://img.shields.io/hexpm/v/paper_trail.svg?style=flat)](https://hex.pm/packages/paper_trail) [![Hex docs](http://img.shields.io/badge/hex.pm-docs-green.svg?style=flat)](https://hexdocs.pm/paper_trail/PaperTrail.html)
+[![Hex Version](http://img.shields.io/hexpm/v/paper_trail.svg?style=flat)](https://hex.pm/packages/paper_trail) [![Hex docs](http://img.shields.io/badge/hex.pm-docs-green.svg?style=flat)](https://hexdocs.pm/paper_trail/PaperTrail.html)
 
 # How does it work?
 
@@ -19,13 +19,13 @@ PaperTrail is assailed with hundreds of test assertions for each release. Data i
   # {:ok,
   #  %{model: %Post{__meta__: #Ecto.Schema.Metadata<:loaded, "posts">,
   #     title: "Word on the street is Elixir got its own database versioning library",
-  #     content: "You should try it now!", id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #     updated_at: #Ecto.DateTime<2016-09-15 21:42:38>},
+  #     content: "You should try it now!", id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #     updated_at: ~N[2016-09-15 21:42:38]},
   #    version: %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #     event: "insert", id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
+  #     event: "insert", id: 1, inserted_at: ~N[2016-09-15 21:42:38],
   #     item_changes: %{title: "Word on the street is Elixir got its own database versioning library",
-  #       content: "You should try it now!", id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #       updated_at: #Ecto.DateTime<2016-09-15 21:42:38>},
+  #       content: "You should try it now!", id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #       updated_at: ~N[2016-09-15 21:42:38]},
   #     item_id: 1, item_type: "Post", originator_id: nil, originator: nil, meta: nil}}}
 
   # => on error(it matches Repo.insert/2):
@@ -45,10 +45,10 @@ PaperTrail is assailed with hundreds of test assertions for each release. Data i
   # {:ok,
   #  %{model: %Post{__meta__: #Ecto.Schema.Metadata<:loaded, "posts">,
   #     title: "Elixir matures fast", content: "Future is already here, Elixir is the next step!",
-  #     id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #     updated_at: #Ecto.DateTime<2016-09-15 22:00:59>},
+  #     id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #     updated_at: ~N[2016-09-15 22:00:59]},
   #    version: %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #     event: "update", id: 2, inserted_at: #Ecto.DateTime<2016-09-15 22:00:59>,
+  #     event: "update", id: 2, inserted_at: ~N[2016-09-15 22:00:59],
   #     item_changes: %{title: "Elixir matures fast", content: "Future is already here, Elixir is the next step!"},
   #     item_id: 1, item_type: "Post", originator_id: nil, originator: nil
   #     meta: nil}}}
@@ -61,7 +61,7 @@ PaperTrail is assailed with hundreds of test assertions for each release. Data i
 
   PaperTrail.get_version(post)
   #  %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #   event: "update", id: 2, inserted_at: #Ecto.DateTime<2016-09-15 22:00:59>,
+  #   event: "update", id: 2, inserted_at: ~N[2016-09-15 22:00:59],
   #   item_changes: %{title: "Elixir matures fast", content: "Future is already here, Elixir is the next step!"},
   #   item_id: 1, item_type: "Post", originator_id: nil, originator: nil, meta: nil}}}
 
@@ -72,13 +72,13 @@ PaperTrail is assailed with hundreds of test assertions for each release. Data i
   # {:ok,
   #  %{model: %Post{__meta__: #Ecto.Schema.Metadata<:deleted, "posts">,
   #     title: "Elixir matures fast", content: "Future is already here, Elixir is the next step!",
-  #     id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #     updated_at: #Ecto.DateTime<2016-09-15 22:00:59>},
+  #     id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #     updated_at: ~N[2016-09-15 22:00:59]},
   #    version: %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #     event: "delete", id: 3, inserted_at: #Ecto.DateTime<2016-09-15 22:22:12>,
+  #     event: "delete", id: 3, inserted_at: ~N[2016-09-15 22:22:12],
   #     item_changes: %{title: "Elixir matures fast", content: "Future is already here, Elixir is the next step!",
-  #       id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #       updated_at: #Ecto.DateTime<2016-09-15 22:00:59>},
+  #       id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #       updated_at: ~N[2016-09-15 22:00:59]},
   #     item_id: 1, item_type: "Post", originator_id: nil, originator: nil, meta: nil}}}
 
   Repo.aggregate(Post, :count, :id) # => 0
@@ -87,7 +87,7 @@ PaperTrail is assailed with hundreds of test assertions for each release. Data i
 
   PaperTrail.Version.last() # returns the last version in the db by inserted_at
   #  %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #   event: "delete", id: 3, inserted_at: #Ecto.DateTime<2016-09-15 22:22:12>,
+  #   event: "delete", id: 3, inserted_at: ~N[2016-09-15 22:22:12],
   #   item_changes: %{"title" => "Elixir matures fast", content: "Future is already here, Elixir is the next step!", "id" => 1,
   #     "inserted_at" => "2016-09-15T21:42:38",
   #     "updated_at" => "2016-09-15T22:00:59"},
@@ -104,7 +104,7 @@ The library source code is minimal and well tested. It is suggested to read the 
 
   ```elixir
     def deps do
-      [{:paper_trail, "~> 0.7.3"}]
+      [{:paper_trail, "~> 0.8.1"}]
     end
   ```
 
@@ -184,6 +184,8 @@ You can specify setter/originator relationship to paper_trail versions with ```o
   config :paper_trail, originator: [name: :user, model: YourApp.User]
   # For most applications originator should be the user since models can be updated/created/deleted by several users.
 ```
+
+Note: You will need to recompile your deps after you have added the config for originator. 
 
 Then originator name could be used for querying and preloading. Originator setting must be done via ```:originator``` or originator name that is defined in the paper_trail configuration:
 
@@ -276,11 +278,11 @@ When you run PaperTrail.insert/2 transaction, ```first_version_id``` and ```curr
 company = Company.changeset(%Company{}, %{name: "Acme LLC"}) |> PaperTrail.insert
 # {:ok,
 #  %{model: %Company{__meta__: #Ecto.Schema.Metadata<:loaded, "companies">,
-#     name: "Acme LLC", founded_in: nil, id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-#     updated_at: #Ecto.DateTime<2016-09-15 21:42:38>, first_version_id: 1, current_version_id: 1},
+#     name: "Acme LLC", founded_in: nil, id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+#     updated_at: ~N[2016-09-15 21:42:38], first_version_id: 1, current_version_id: 1},
 #    version: %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-#      event: "insert", id: 1, inserted_at: #Ecto.DateTime<2016-09-15 22:22:12>,
-#      item_changes: %{name: "Acme LLC", founded_in: nil, id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>},
+#      event: "insert", id: 1, inserted_at: ~N[2016-09-15 22:22:12],
+#      item_changes: %{name: "Acme LLC", founded_in: nil, id: 1, inserted_at: ~N[2016-09-15 21:42:38]},
 #      originator_id: nil, origin: "unknown", meta: nil}}}
 ```
 
@@ -290,10 +292,10 @@ When you PaperTrail.update/2 a model, ```current_version_id``` gets updated duri
 edited_company = Company.changeset(company, %{name: "Acme Inc."}) |> PaperTrail.update(origin: "documentation")
 # {:ok,
 #  %{model: %Company{__meta__: #Ecto.Schema.Metadata<:loaded, "companies">,
-#     name: "Acme Inc.", founded_in: nil, id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-#     updated_at: #Ecto.DateTime<2016-09-15 23:22:12>, first_version_id: 1, current_version_id: 2},
+#     name: "Acme Inc.", founded_in: nil, id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+#     updated_at: ~N[2016-09-15 23:22:12], first_version_id: 1, current_version_id: 2},
 #    version: %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-#      event: "update", id: 2, inserted_at: #Ecto.DateTime<2016-09-15 23:22:12>,
+#      event: "update", id: 2, inserted_at: ~N[2016-09-15 23:22:12],
 #      item_changes: %{name: "Acme Inc."}, originator_id: nil, origin: "documentation", meta: nil}}}
 ```
 
@@ -315,18 +317,18 @@ Bang functions assume the operation will always be successful, otherwise functio
   # => on success:
   # %Post{__meta__: #Ecto.Schema.Metadata<:loaded, "posts">,
   #   title: "Word on the street is Elixir got its own database versioning library",
-  #   content: "You should try it now!", id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #   updated_at: #Ecto.DateTime<2016-09-15 21:42:38>
+  #   content: "You should try it now!", id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #   updated_at: ~N[2016-09-15 21:42:38]
   # }
   #
   # => on error raises: Ecto.InvalidChangesetError !!
 
   inserted_post_version = PaperTrail.get_version(inserted_post)
   # %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #   event: "insert", id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
+  #   event: "insert", id: 1, inserted_at: ~N[2016-09-15 21:42:38],
   #   item_changes: %{title: "Word on the street is Elixir got its own database versioning library",
-  #     content: "You should try it now!", id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #     updated_at: #Ecto.DateTime<2016-09-15 21:42:38>},
+  #     content: "You should try it now!", id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #     updated_at: ~N[2016-09-15 21:42:38]},
   #   item_id: 1, item_type: "Post", originator_id: nil, originator: nil, meta: nil}
 
   edit_changeset = Post.changeset(inserted_post, %{
@@ -338,14 +340,14 @@ Bang functions assume the operation will always be successful, otherwise functio
   # => on success:
   # %Post{__meta__: #Ecto.Schema.Metadata<:loaded, "posts">,
   #   title: "Elixir matures fast", content: "Future is already here, you deserve to be awesome!",
-  #   id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #   updated_at: #Ecto.DateTime<2016-09-15 22:00:59>}
+  #   id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #   updated_at: ~N[2016-09-15 22:00:59]}
   #
   # => on error raises: Ecto.InvalidChangesetError !!
 
   updated_post_version = PaperTrail.get_version(updated_post)
   # %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #   event: "update", id: 2, inserted_at: #Ecto.DateTime<2016-09-15 22:00:59>,
+  #   event: "update", id: 2, inserted_at: ~N[2016-09-15 22:00:59],
   #   item_changes: %{title: "Elixir matures fast", content: "Future is already here, Elixir is the next step!"},
   #   item_id: 1, item_type: "Post", originator_id: nil, originator: nil
   #   meta: nil}
@@ -354,17 +356,17 @@ Bang functions assume the operation will always be successful, otherwise functio
   # => on success:
   # %Post{__meta__: #Ecto.Schema.Metadata<:deleted, "posts">,
   #   title: "Elixir matures fast", content: "Future is already here, Elixir is the next step!",
-  #   id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #   updated_at: #Ecto.DateTime<2016-09-15 22:00:59>}
+  #   id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #   updated_at: ~N[2016-09-15 22:00:59]}
   #
   # => on error raises: Ecto.InvalidChangesetError !!
 
   PaperTrail.get_version(updated_post)
   # %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #   event: "delete", id: 3, inserted_at: #Ecto.DateTime<2016-09-15 22:22:12>,
+  #   event: "delete", id: 3, inserted_at: ~N[2016-09-15 22:22:12],
   #   item_changes: %{title: "Elixir matures fast", content: "Future is already here, Elixir is the next step!",
-  #   id: 1, inserted_at: #Ecto.DateTime<2016-09-15 21:42:38>,
-  #   updated_at: #Ecto.DateTime<2016-09-15 22:00:59>},
+  #   id: 1, inserted_at: ~N[2016-09-15 21:42:38],
+  #   updated_at: ~N[2016-09-15 22:00:59]},
   #   item_id: 1, item_type: "Post", originator_id: nil, originator: nil, meta: nil}
 
   Repo.aggregate(Post, :count, :id) # => 0
@@ -373,7 +375,7 @@ Bang functions assume the operation will always be successful, otherwise functio
 
   PaperTrail.Version.last() # returns the last version in the db by inserted_at
   #  %PaperTrail.Version{__meta__: #Ecto.Schema.Metadata<:loaded, "versions">,
-  #   event: "delete", id: 3, inserted_at: #Ecto.DateTime<2016-09-15 22:22:12>,
+  #   event: "delete", id: 3, inserted_at: ~N[2016-09-15 22:22:12],
   #   item_changes: %{"title" => "Elixir matures fast", content: "Future is already here, Elixir is the next step!", "id" => 1,
   #     "inserted_at" => "2016-09-15T21:42:38",
   #     "updated_at" => "2016-09-15T22:00:59"},
@@ -447,6 +449,8 @@ Many thanks to:
 - [Mitchell Henke](https://github.com/mitchellhenke) - Fixed weird elixir compiler warnings
 - [Iván González](https://github.com/dreamingechoes) - Multi tenancy feature and some minor refactors
 - [Teo Choong Ping](https://github.com/seymores) - Fixed paper_trail references for newer Elixir versions
+- [devvit](https://github.com/devvit) - Added non-regular primary key tracking support
+- [rustamtolipov](https://github.com/rustamtolipov) - Added support for Ecto v3
 - [Izel Nakri](https://github.com/izelnakri) - The Originator of this library. See what I did there ;)
 
 Additional thanks to:
