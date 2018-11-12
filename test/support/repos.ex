@@ -1,9 +1,9 @@
 defmodule PaperTrail.Repo do
-  use Ecto.Repo, otp_app: :paper_trail
+  use Ecto.Repo, otp_app: :paper_trail, adapter: Ecto.Adapters.Postgres
 end
 
 defmodule PaperTrail.UUIDRepo do
-  use Ecto.Repo, otp_app: :paper_trail
+  use Ecto.Repo, otp_app: :paper_trail, adapter: Ecto.Adapters.Postgres
 end
 
 defmodule User do
@@ -12,8 +12,8 @@ defmodule User do
   import Ecto.Changeset
 
   schema "users" do
-    field :token, :string
-    field :username, :string
+    field(:token, :string)
+    field(:username, :string)
 
     timestamps()
   end
