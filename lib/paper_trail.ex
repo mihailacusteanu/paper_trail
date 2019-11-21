@@ -116,8 +116,9 @@ defmodule PaperTrail do
   @doc """
   Updates a record from the database with a related version insertion in one transaction
   """
-  def update(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+  def update(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil, just_log_changes: false]) do
     repo = options[:repo] || PaperTrail.RepoClient.repo()
+    just_log_changes = options[:just_log_changes]
     client = PaperTrail.RepoClient
     transaction_order = case client.strict_mode() do
       true ->
@@ -141,12 +142,17 @@ defmodule PaperTrail do
           initial_version |> change(%{item_changes: new_item_changes}) |> PaperTrail.RepoClient.repo().update
         end)
       _ ->
-        Multi.new
-        |> Multi.update(:model, changeset)
-        |> Multi.run(:version, fn %{model: _model} ->
-          version = make_version_struct(%{event: "update"}, changeset, options)
-          PaperTrail.RepoClient.repo().insert(version)
-        end)
+          multi = Multi.new()
+          multi =
+            case just_log_changes do
+              true -> multi
+              _ -> Multi.update(multi, :model, changeset)
+            end
+          multi
+          |> Multi.run(:version, fn _repo, _changes ->
+            version = make_version_struct(%{event: "update"}, changeset, options)
+            PaperTrail.RepoClient.repo().insert(version)
+          end)
     end
 
     transaction = repo.transaction(transaction_order)
@@ -162,7 +168,14 @@ defmodule PaperTrail do
       _ ->
         case transaction do
           {:error, :model, changeset, %{}} -> {:error, Map.merge(changeset, %{repo: repo})}
-          _ -> transaction
+          _ ->
+            case just_log_changes do
+              true ->
+                {:ok, changes} = transaction
+                changes = Map.merge(changes, %{model: changeset.data})
+                {:ok, changes}
+              _ -> transaction
+            end
         end
     end
   end
