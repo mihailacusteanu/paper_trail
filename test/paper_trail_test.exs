@@ -507,6 +507,42 @@ defmodule PaperTrailTest do
     assert old_person == person_before_deletion
   end
 
+  test "inserts version for insert action" do
+    user = create_user
+    changeset = User.changeset(user)
+    changeset = %{changeset | action: :insert}
+
+    version = PaperTrail.insert_version(changeset)
+    version_count = Version.count()
+
+    assert version_count == 1
+    assert version.event == "insert"
+  end
+
+  test "inserts version for update action" do
+    user = create_user
+    changeset = User.changeset(user, %{token: "update-token"})
+    changeset = %{changeset | action: :update}
+
+    version = PaperTrail.insert_version(changeset)
+    version_count = Version.count()
+
+    assert version_count == 1
+    assert version.event == "update"
+  end
+
+  test "inserts version for delete action" do
+    user = create_user
+    changeset = User.changeset(user)
+    changeset = %{changeset | action: :delete}
+
+    version = PaperTrail.insert_version(changeset)
+    version_count = Version.count()
+
+    assert version_count == 1
+    assert version.event == "delete"
+  end
+
   defp create_user do
     User.changeset(%User{}, %{token: "fake-token", username: "izelnakri"}) |> @repo.insert!
   end

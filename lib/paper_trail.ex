@@ -272,6 +272,12 @@ defmodule PaperTrail do
     |> elem(1)
   end
 
+  def insert_version(%{action: action} = changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+    struct = if action == :update, do: changeset, else: changeset.data
+    version = make_version_struct(%{event: to_string(action)}, struct, options)
+    PaperTrail.RepoClient.repo().insert!(version, options)
+  end
+
   defp make_version_struct(%{event: "insert"}, model, options) do
     originator = PaperTrail.RepoClient.originator()
     originator_ref = options[originator[:name]] || options[:originator]
