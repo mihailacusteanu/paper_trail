@@ -132,8 +132,9 @@ defmodule PaperTrail do
   @doc """
   Updates a record from the database with a related version insertion in one transaction
   """
-  def update(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil]) do
+  def update(changeset, options \\ [origin: nil, meta: nil, originator: nil, prefix: nil, repo: nil, just_log_changes: false]) do
     repo = options[:repo] || PaperTrail.RepoClient.repo()
+    just_log_changes = options[:just_log_changes]
     client = PaperTrail.RepoClient
 
     transaction_order =
@@ -166,9 +167,14 @@ defmodule PaperTrail do
           end)
 
         _ ->
-          Multi.new()
-          |> Multi.update(:model, changeset)
-          |> Multi.run(:version, fn repo, %{model: _model} ->
+          multi = Multi.new()
+          multi =
+            case just_log_changes do
+              true -> multi
+              _ -> Multi.update(multi, :model, changeset)
+            end
+          multi
+          |> Multi.run(:version, fn repo, _changes  ->
             version = make_version_struct(%{event: "update"}, changeset, options)
             RepoClient.repo().insert(version)
           end)
@@ -190,7 +196,14 @@ defmodule PaperTrail do
       _ ->
         case transaction do
           {:error, :model, changeset, %{}} -> {:error, Map.merge(changeset, %{repo: repo})}
-          _ -> transaction
+          _ ->
+            case just_log_changes do
+              true ->
+                {:ok, changes} = transaction
+                changes = Map.merge(changes, %{model: changeset.data})
+                {:ok, changes}
+              _ -> transaction
+            end
         end
     end
   end
